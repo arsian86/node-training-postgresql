@@ -4,19 +4,16 @@ const http = require("http")
 const AppDataSource = require("./db")
 const { v4: uuidv4 } = require('uuid')
 
-
+//定義防呆函數
 function isUndefined (value) {
   return value === undefined
 }
-
 function isNotValidString (value) {
   return typeof value !== "string" || value.trim().length === 0 || value === ""
 }
-
 function isNotValidInteger (value) {
   return typeof value !== "number" || value < 0 || value % 1 !== 0
 }
-
 const requestListener = async (req, res) => {
   const headers = {
     "Access-Control-Allow-Headers": "Content-Type, Authorization, Content-Length, X-Requested-With",
@@ -29,6 +26,7 @@ const requestListener = async (req, res) => {
     body += chunk
   })
 
+  //定義6個API
   if (req.url === "/api/credit-package" && req.method === "GET") {
     try {
       const packages = await AppDataSource.getRepository("CreditPackage").find({
@@ -207,7 +205,7 @@ const requestListener = async (req, res) => {
         res.end()
       }
     })
-  } else if (req.url.startsWith("/api/Skill/") && req.method === "DELETE") {
+  } else if (req.url.startsWith("/api/coaches/skill/") && req.method === "DELETE") {
     try {
       const skillId = req.url.split("/").pop()
       if (isUndefined(skillId) || isNotValidString(skillId)) {
@@ -256,7 +254,6 @@ const requestListener = async (req, res) => {
     res.end()
   }
 }
-
 const server = http.createServer(requestListener)
 
 async function startServer () {
