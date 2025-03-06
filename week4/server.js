@@ -30,7 +30,7 @@ const requestListener = async (req, res) => {
   if (req.url === "/api/credit-package" && req.method === "GET") {
     try {
       const packages = await AppDataSource.getRepository("CreditPackage").find({
-        select: ["id", "name", "credit_amount", "price"]
+        select: ["id", "name", "credit_amount", "price","createdAt"]
       })
       res.writeHead(200, headers)
       res.write(JSON.stringify({
@@ -49,10 +49,10 @@ const requestListener = async (req, res) => {
   } else if (req.url === "/api/credit-package" && req.method === "POST") {
     req.on("end", async () => {
       try {
-        const data = JSON.parse(body)
-        if (isUndefined(data.name) || isNotValidString(data.name) ||
-                isUndefined(data.credit_amount) || isNotValidInteger(data.credit_amount) ||
-                isUndefined(data.price) || isNotValidInteger(data.price)) {
+        const {name,credit_amount,price} = JSON.parse(body)
+        if (isUndefined(name) || isNotValidString(name) ||
+                isUndefined(credit_amount) || isNotValidInteger(credit_amount) ||
+                isUndefined(price) || isNotValidInteger(price)) {
           res.writeHead(400, headers)
           res.write(JSON.stringify({
             status: "failed",
@@ -65,7 +65,7 @@ const requestListener = async (req, res) => {
         const creditPackageRepo = await AppDataSource.getRepository("CreditPackage")
         const existPackage = await creditPackageRepo.find({
           where: {
-            name: data.name
+            name: name
           }
         })
         if (existPackage.length > 0) {
@@ -79,10 +79,11 @@ const requestListener = async (req, res) => {
         }
         //新增資料
         const newPackage = await creditPackageRepo.create({
-          id:uuidv4(),
-          name: data.name,
-          credit_amount: data.credit_amount,
-          price: data.price
+          id: uuidv4(),
+          name: name,
+          credit_amount: credit_amount,
+          price: price,
+          createdAt: new Date()
         })
         const result = await creditPackageRepo.save(newPackage)
         res.writeHead(200, headers)
@@ -140,7 +141,7 @@ const requestListener = async (req, res) => {
   } else if (req.url === "/api/coaches/skill" && req.method === "GET") {
     try {
       const packages = await AppDataSource.getRepository("Skill").find({
-        select: ["id", "name"]
+        select: ["id", "name","createdAt"]
       })
       res.writeHead(200, headers)
       res.write(JSON.stringify({
@@ -159,8 +160,8 @@ const requestListener = async (req, res) => {
   } else if (req.url === "/api/coaches/skill" && req.method === "POST") {
     req.on("end", async () => {
       try {
-        const data = JSON.parse(body)
-        if (isUndefined(data.name) || isNotValidString(data.name)){
+        const {name} = JSON.parse(body)
+        if (isUndefined(name) || isNotValidString(name)){
           res.writeHead(400, headers)
           res.write(JSON.stringify({
             status: "failed",
@@ -172,7 +173,7 @@ const requestListener = async (req, res) => {
         const skillRepo = await AppDataSource.getRepository("Skill")
         const existSkill = await skillRepo.find({
           where: {
-            name: data.name
+            name: name
           }
         })
         if (existSkill.length > 0) {
@@ -186,7 +187,8 @@ const requestListener = async (req, res) => {
         }
         const newSkill = await skillRepo.create({
           id: uuidv4(),
-          name: data.name
+          name: name,
+          createdAt: new Date()
         })
         const result = await skillRepo.save(newSkill)
         res.writeHead(200, headers)
