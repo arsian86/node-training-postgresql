@@ -1,3 +1,4 @@
+// Coach.js
 const { EntitySchema } = require('typeorm')
 
 module.exports = new EntitySchema({
@@ -42,16 +43,13 @@ module.exports = new EntitySchema({
     User: {
       target: 'User',
       type: 'one-to-one',
+      onDelete: 'CASCADE',
+      inverseSide: 'Coach',
       joinColumn: {
         name: 'user_id',
         referencedColumnName: 'id',
         foreignKeyConstraintName: 'coach_user_id_fk'
       }
-    },
-    CoachLinkSkill: {
-      target: 'CoachLinkSkill',
-      type: 'one-to-many',
-      inverseSide: 'Coach'
     }
   }
 })

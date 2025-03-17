@@ -1,12 +1,13 @@
-const express = require('express')
-
+const express = require("express")
 const router = express.Router()
-const skill = require('../controllers/skill')
+const errorHandlerAsync = require("../utils/errorHandlerAsync")
+const skillController = require("../controllers/skill")
 
-router.get('/', skill.getAll)
-
-router.post('/', skill.post)
-
-router.delete('/:skillId', skill.deletePackage)
+//取得教練專長列表
+router.get("/", errorHandlerAsync(skillController.getSkills))
+//新增教練專長
+router.post("/", errorHandlerAsync(skillController.postSkill))
+//刪除教練專長
+router.delete("/:skillId", errorHandlerAsync(skillController.deleteSkill))
 
 module.exports = router

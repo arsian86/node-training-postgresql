@@ -1,3 +1,4 @@
+//User.js
 const { EntitySchema } = require('typeorm')
 
 module.exports = new EntitySchema({
@@ -34,11 +35,13 @@ module.exports = new EntitySchema({
     created_at: {
       type: 'timestamp',
       createDate: true,
-      nullable: false
+      name: 'created_at',
+      nullable: false,
     },
     updated_at: {
       type: 'timestamp',
       updateDate: true,
+      name: 'update_at',
       nullable: false
     }
   }

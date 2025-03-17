@@ -1,3 +1,4 @@
+// skill.js 實體資料表
 const { EntitySchema } = require('typeorm')
 
 module.exports = new EntitySchema({

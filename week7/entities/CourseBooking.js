@@ -61,7 +61,7 @@ module.exports = new EntitySchema({
         foreignKeyConstraintName: 'course_booking_user_id_fk'
       }
     },
-    Course: {
+    CreditPackage: {
       target: 'Course',
       type: 'many-to-one',
       joinColumn: {

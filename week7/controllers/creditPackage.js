@@ -1,141 +1,97 @@
-const { dataSource } = require('../db/data-source')
-const logger = require('../utils/logger')('CreditPackageController')
+const {dataSource} = require("../db/data-source")
+const {
+  isNotValidInteger,
+  isNotValidString,
+  isUndefined,
+} = require("../utils/validators")
+const appError = require("../utils/appError")
 
-function isUndefined (value) {
-  return value === undefined
-}
-
-function isNotValidSting (value) {
-  return typeof value !== 'string' || value.trim().length === 0 || value === ''
-}
-
-function isNotValidInteger (value) {
-  return typeof value !== 'number' || value < 0 || value % 1 !== 0
-}
-
-async function getAll (req, res, next) {
-  try {
-    const creditPackages = await dataSource.getRepository('CreditPackage').find({
-      select: ['id', 'name', 'credit_amount', 'price']
+const creditPackageController = {
+  async getPackages(req, res, next) {
+    const packages = await dataSource.getRepository("CreditPackage").find({
+      select: ["id", "name", "credit_amount", "price", "createdAt"],
     })
     res.status(200).json({
-      status: 'success',
-      data: creditPackages
+      status: "success",
+      data: packages,
     })
-  } catch (error) {
-    logger.error(error)
-    next(error)
-  }
-}
-
-async function post (req, res, next) {
-  try {
-    const { name, credit_amount: creditAmount, price } = req.body
-    if (isUndefined(name) || isNotValidSting(name) ||
-      isUndefined(creditAmount) || isNotValidInteger(creditAmount) ||
-      isUndefined(price) || isNotValidInteger(price)) {
-      res.status(400).json({
-        status: 'failed',
-        message: '欄位未填寫正確'
-      })
-      return
+  },
+  async addPackage(req, res, next) {
+    const {name, credit_amount, price} = req.body
+    if (
+      isUndefined(name) ||
+      isNotValidString(name) ||
+      isUndefined(credit_amount) ||
+      isNotValidInteger(credit_amount) ||
+      isUndefined(price) ||
+      isNotValidInteger(price)
+    ) {
+      return next(appError(400, "欄位未填寫正確"))
     }
-    const creditPackageRepo = dataSource.getRepository('CreditPackage')
-    const existCreditPackage = await creditPackageRepo.findOne({
+    //查詢資料是否重複
+    const creditPackageRepo = await dataSource.getRepository("CreditPackage")
+    const existPackage = await creditPackageRepo.find({
       where: {
-        name
-      }
+        name,
+      },
     })
-    if (existCreditPackage) {
-      res.status(409).json({
-        status: 'failed',
-        message: '資料重複'
-      })
-      return
+    if (existPackage.length > 0) {
+      return next(appError(409, "資料重複"))
     }
-    const newCreditPackage = await creditPackageRepo.create({
+    //新增資料
+    const newPackage = await creditPackageRepo.create({
       name,
-      credit_amount: creditAmount,
-      price
+      credit_amount,
+      price,
     })
-    const result = await creditPackageRepo.save(newCreditPackage)
+    const result = await creditPackageRepo.save(newPackage)
     res.status(200).json({
-      status: 'success',
-      data: result
+      status: "success",
+      data: result,
     })
-  } catch (error) {
-    logger.error(error)
-    next(error)
-  }
-}
-
-async function postUserBuy (req, res, next) {
-  try {
-    const { id } = req.user
-    const { creditPackageId } = req.params
-    const creditPackageRepo = dataSource.getRepository('CreditPackage')
+  },
+  async buyPackage(req, res, next) {
+    const {id} = req.user
+    const {creditPackageId} = req.params
+    const creditPackageRepo = dataSource.getRepository("CreditPackage")
     const creditPackage = await creditPackageRepo.findOne({
       where: {
-        id: creditPackageId
-      }
+        id: creditPackageId,
+      },
     })
     if (!creditPackage) {
-      res.status(400).json({
-        status: 'failed',
-        message: 'ID錯誤'
-      })
-      return
+      return next(appError(400, "ID錯誤"))
     }
-    const creditPurchaseRepo = dataSource.getRepository('CreditPurchase')
+    const creditPurchaseRepo = dataSource.getRepository("CreditPurchase")
     const newPurchase = await creditPurchaseRepo.create({
       user_id: id,
       credit_package_id: creditPackageId,
       purchased_credits: creditPackage.credit_amount,
       price_paid: creditPackage.price,
-      purchaseAt: new Date().toISOString()
+      purchaseAt: new Date().toISOString(),
     })
     await creditPurchaseRepo.save(newPurchase)
     res.status(200).json({
-      status: 'success',
-      data: null
+      status: "success",
+      data: null,
     })
-  } catch (error) {
-    logger.error(error)
-    next(error)
-  }
-}
-
-async function deletePackage (req, res, next) {
-  try {
-    const { creditPackageId } = req.params
-    if (isUndefined(creditPackageId) || isNotValidSting(creditPackageId)) {
-      res.status(400).json({
-        status: 'failed',
-        message: '欄位未填寫正確'
-      })
-      return
+  },
+  async deletePackage(req, res, next) {
+    const packageId = req.url.split("/").pop()
+    if (isUndefined(packageId) || isNotValidString(packageId)) {
+      return next(appError(400, "欄位未填寫正確"))
     }
-    const result = await dataSource.getRepository('CreditPackage').delete(creditPackageId)
+    const result = await dataSource
+      .getRepository("CreditPackage")
+      .delete(packageId)
     if (result.affected === 0) {
-      res.status(400).json({
-        status: 'failed',
-        message: 'ID錯誤'
-      })
-      return
+      return next(appError(400, "ID錯誤"))
     }
     res.status(200).json({
-      status: 'success',
-      data: result
+      status: "success",
+      data: result,
     })
-  } catch (error) {
-    logger.error(error)
-    next(error)
-  }
+  },
 }
 
-module.exports = {
-  getAll,
-  post,
-  postUserBuy,
-  deletePackage
-}
+module.exports = creditPackageController
