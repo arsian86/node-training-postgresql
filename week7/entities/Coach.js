@@ -1,55 +1,55 @@
 // Coach.js
-const { EntitySchema } = require('typeorm')
+const {EntitySchema} = require("typeorm")
 
 module.exports = new EntitySchema({
-  name: 'Coach',
-  tableName: 'COACH',
+  name: "Coach",
+  tableName: "COACH",
   columns: {
     id: {
       primary: true,
-      type: 'uuid',
-      generated: 'uuid'
+      type: "uuid",
+      generated: "uuid",
     },
     user_id: {
-      type: 'uuid',
+      type: "uuid",
       unique: true,
-      nullable: false
+      nullable: false,
     },
     experience_years: {
-      type: 'integer',
-      nullable: false
+      type: "integer",
+      nullable: false,
     },
     description: {
-      type: 'text',
-      nullable: false
+      type: "text",
+      nullable: false,
     },
     profile_image_url: {
-      type: 'varchar',
+      type: "varchar",
       length: 2048,
-      nullable: true
+      nullable: true,
     },
     created_at: {
-      type: 'timestamp',
+      type: "timestamp",
       createDate: true,
-      nullable: false
+      nullable: false,
     },
     updated_at: {
-      type: 'timestamp',
+      type: "timestamp",
       updateDate: true,
-      nullable: false
-    }
+      nullable: false,
+    },
   },
   relations: {
     User: {
-      target: 'User',
-      type: 'one-to-one',
-      onDelete: 'CASCADE',
-      inverseSide: 'Coach',
+      target: "User",
+      type: "one-to-one",
+      onDelete: "CASCADE",
+      inverseSide: "Coach",
       joinColumn: {
-        name: 'user_id',
-        referencedColumnName: 'id',
-        foreignKeyConstraintName: 'coach_user_id_fk'
-      }
-    }
-  }
+        name: "user_id",
+        referencedColumnName: "id",
+        foreignKeyConstraintName: "coach_user_id_fk",
+      },
+    },
+  },
 })

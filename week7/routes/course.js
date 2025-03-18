@@ -13,7 +13,7 @@ const courseController = require("../controllers/course")
 
 //取得課程列表
 router.get("/", errorHandlerAsync(courseController.getCourses))
-//取得教練詳細資訊
+//報名課程
 router.post(
   "/:courseId",
   auth,

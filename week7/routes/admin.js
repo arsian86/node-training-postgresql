@@ -31,5 +31,12 @@ router.post(
   "/coaches/:userId",
   errorHandlerAsync(adminController.changeUsertoCoach)
 )
+//取得教練自己的課程列表
+router.get(
+  "/coaches/courses",
+  auth,
+  isCoach,
+  errorHandlerAsync(adminController.getCoachCourses)
+)
 
 module.exports = router

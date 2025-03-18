@@ -1,86 +1,85 @@
 // Course.js
 
-const { EntitySchema } = require('typeorm')
+const {EntitySchema} = require("typeorm")
 
 module.exports = new EntitySchema({
-  name: 'Course',
-  tableName: 'COURSE',
+  name: "Course",
+  tableName: "COURSE",
   columns: {
     id: {
       primary: true,
-      type: 'uuid',
-      generated: 'uuid'
+      type: "uuid",
+      generated: "uuid",
     },
     user_id: {
-      type: 'uuid',
+      type: "uuid",
       nullable: false,
       foreignKey: {
-        name: 'course_user_id_fkey',
-        columnNames: ['user_id'],
-        referencedTableName: 'USER',
-        referencedColumnNames: ['id']
-      }
+        name: "course_user_id_fkey",
+        columnNames: ["user_id"],
+        referencedTableName: "USER",
+        referencedColumnNames: ["id"],
+      },
     },
     skill_id: {
-      type: 'uuid',
+      type: "uuid",
       nullable: false,
       foreignKey: {
-        name: 'course_skill_id_fkey',
-        columnNames: ['skill_id'],
-        referencedTableName: 'SKILL',
-        referencedColumnNames: ['id']
-      }
+        name: "course_skill_id_fkey",
+        columnNames: ["skill_id"],
+        referencedTableName: "SKILL",
+        referencedColumnNames: ["id"],
+      },
     },
     name: {
-      type: 'varchar',
+      type: "varchar",
       length: 100,
-      nullable: false
+      nullable: false,
     },
     description: {
-      type: 'text',
-      nullable: false
+      type: "text",
+      nullable: false,
     },
     start_at: {
-      type: 'timestamp',
-      nullable: false
+      type: "timestamp",
+      nullable: false,
     },
     end_at: {
-      type: 'timestamp',
-      nullable: false
+      type: "timestamp",
+      nullable: false,
     },
     max_participants: {
-      type: 'integer',
-      nullable: false
+      type: "integer",
+      nullable: false,
     },
     meeting_url: {
-      type: 'varchar',
+      type: "varchar",
       length: 2048,
-      nullable: false
+      nullable: false,
     },
     created_at: {
-      type: 'timestamp',
+      type: "timestamp",
       createDate: true,
-      nullable: false
+      nullable: false,
     },
     updated_at: {
-      type: 'timestamp',
+      type: "timestamp",
       updateDate: true,
-      nullable: false
-    }
+      nullable: false,
+    },
   },
   relations: {
     User: {
-      target: 'User',           
-      type: 'many-to-one',       
-      joinColumn: { name: 'user_id' },
-      onDelete: 'CASCADE'       
+      target: "User",
+      type: "many-to-one",
+      joinColumn: {name: "user_id"},
+      onDelete: "CASCADE",
     },
     Skill: {
-      target: 'Skill',
-      type: 'many-to-one',
-      joinColumn: { name: 'skill_id' },
-      onDelete: 'CASCADE'
-    }
-  }
-
+      target: "Skill",
+      type: "many-to-one",
+      joinColumn: {name: "skill_id"},
+      onDelete: "CASCADE",
+    },
+  },
 })

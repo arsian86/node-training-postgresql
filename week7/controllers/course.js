@@ -58,6 +58,7 @@ const courseController = {
       where: {
         user_id: id,
         course_id: courseId,
+        cancelledAt: IsNull(), // 只檢查還沒取消的課程
       },
     })
     if (userCourseBooking) {

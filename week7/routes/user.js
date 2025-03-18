@@ -26,5 +26,19 @@ router.put(
   auth,
   errorHandlerAsync(userController.updateUserProfile)
 )
+//使用者更新密碼
+router.put("/password", auth, errorHandlerAsync(userController.updatePassword))
+//取得使用者已購買的方案列表
+router.get(
+  "/credit-package",
+  auth,
+  errorHandlerAsync(userController.getPurchasedCreditPackages)
+)
+//取得已預約的課程列表
+router.get(
+  "/courses",
+  auth,
+  errorHandlerAsync(userController.getReservedCourses)
+)
 
 module.exports = router

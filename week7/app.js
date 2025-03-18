@@ -44,7 +44,6 @@ app.use("/api/upload", uploadRouter)
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   req.log.error(err)
-
   res.status(err.status || 500).json({
     status: "error",
     message: err.message || "伺服器錯誤",
